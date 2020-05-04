@@ -1,0 +1,35 @@
+resources:
+# codigo fonte
+- name: source
+  type: git
+  source:
+    uri: https://github.com/mateusprado/http_probe.git
+    branch: master
+
+# onde vou rodar esse código
+- name: docker
+  type: docker-image
+  source:
+    repository: alpine
+    tag: latest
+
+# o que vou fazer com esse código (jobs)
+jobs:
+- name: test
+  plan:
+  - aggregate:
+    - get: docker
+    - get: source
+  - task: show-files
+    config:
+      platform: linux
+      run:
+        path: sh
+        args:
+        - -ce
+        - |
+          ls -l
+          ls -l source
+      inputs:
+        - name: source
+    image: docker
