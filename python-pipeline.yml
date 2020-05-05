@@ -1,0 +1,32 @@
+---
+resources:
+  - name: flask-ci
+    type: git
+    icon: github-circle
+    source:
+      uri: https://github.com/bergpb/flask-ci.git
+
+jobs:
+  - name: test
+    public: true
+    plan:
+      - get: flask-ci
+        trigger: true
+      - task: run-tests
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source: { repository: python, tag: alpine }
+          inputs:
+            - name: flask-ci
+          run:
+            path: /bin/ash
+            args:
+              - -c
+              - |
+                apk add build-base
+                cd flask-ci
+                pip install -r requirements.txt
+                pytest -vv
+                coverage run -m pytest
